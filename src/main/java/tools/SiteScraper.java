@@ -28,7 +28,7 @@ public class SiteScraper {
         Elements links = doc.select("a[href]");
         links.removeIf(item -> {
             String href = item.attr("href");
-            return href.length() != 0 && href.indexOf("#") > -1;
+            return href.length() != 0 && href.contains("#");
         } );
         return links;
     }
