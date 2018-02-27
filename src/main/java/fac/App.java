@@ -1,18 +1,21 @@
 package fac;
 
-import org.jsoup.select.Elements;
-import tools.ElementTools;
+import tools.DirectoryParser;
 import tools.SiteScraper;
+import tools.WordParser;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.List;
 
 public class App {
     public static void main(String[] args) {
-        String url = "https://www.emag.ro";
-        SiteScraper emagScraper = new SiteScraper(url);
-        Elements links = emagScraper.getLinks();
+        List<Path> paths = new DirectoryParser().getFiles(Paths.get("testfolder"));
+        List<String> stopwords = WordParser.getStopwords("stopwords.txt");
+        WordParser wp = new WordParser(stopwords);
+        paths.forEach(wp::readFromFile);
+        System.out.println(stopwords.size());
 
-        ElementTools.printAllLinks(links);
-
-        System.out.println(emagScraper.getText());
     }
 }
