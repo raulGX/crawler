@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class WordParser {
     private HashMap<String, Integer> wordMap;
     private List<String> stopwords = null;
+    public static List<String> exceptions = Arrays.asList("SW", "GoT", "fara");
     public static final String wordSeparators = "[.,:;()?!\"\\s]+";
     public WordParser(List<String> stopwords) {
         wordMap = new HashMap<>();
@@ -35,10 +37,11 @@ public class WordParser {
         input.useDelimiter(wordSeparators);
         while (input.hasNext()) {
             String word = input.next();
-            if (stopwords != null) {
-                if (stopwords.contains(word)) {
-                    continue;
-                }
+            if (exceptions != null && exceptions.contains(word)) {
+                //adds to wordMap and skips over stopwords
+            }
+            else if (stopwords != null && stopwords.contains(word)) {
+                continue;
             }
             if (wordMap.containsKey(word)) {
                 int count = wordMap.get(word);
