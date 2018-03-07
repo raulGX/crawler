@@ -37,18 +37,24 @@ public class WordParser {
         input.useDelimiter(wordSeparators);
         while (input.hasNext()) {
             String word = input.next();
-            if (exceptions != null && exceptions.contains(word)) {
+            if (exceptions.contains(word)) {
                 //adds to wordMap and skips over stopwords
+                if (wordMap.containsKey(word)) {
+                    int count = wordMap.get(word);
+                    wordMap.put(word, count+1);
+                } else {
+                    wordMap.put(word, 1);
+                }
             }
-            else if (stopwords != null && stopwords.contains(word)) {
-                continue;
+            else if (!stopwords.contains(word)) {//word = fc(word)
+                if (wordMap.containsKey(word)) {
+                    int count = wordMap.get(word);
+                    wordMap.put(word, count+1);
+                } else {
+                    wordMap.put(word, 1);
+                }
             }
-            if (wordMap.containsKey(word)) {
-                int count = wordMap.get(word);
-                wordMap.put(word, count+1);
-            } else {
-                wordMap.put(word, 1);
-            }
+
         }
     }
 
