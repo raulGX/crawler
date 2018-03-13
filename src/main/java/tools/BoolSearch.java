@@ -33,14 +33,14 @@ public class BoolSearch {
                 filterAnd(nextMap);
                 break;
             case "or":
-                System.out.println('2');
+                HashMap<String, Integer> nextMapOr = index.get(words.get(0));
                 words.remove(0);
-
+                filterOr(nextMapOr);
                 break;
             case "not":
-                System.out.println('3');
+                HashMap<String, Integer> nextMapNot = index.get(words.get(0));
                 words.remove(0);
-
+                filterNot(nextMapNot);
                 break;
             }
         }
@@ -49,6 +49,8 @@ public class BoolSearch {
     }
 
     private void filterAnd(HashMap<String, Integer> nextMap) {
+        if (nextMap == null)
+            return;
         if (nextMap.size() > set.size()) {
             Iterator it = set.iterator();
             while (it.hasNext()) {
@@ -66,6 +68,45 @@ public class BoolSearch {
                 if (oldSet.contains(key)) {
                     set.add(key);//test
                 }
+            }
+        }
+    }
+
+    private void filterOr(HashMap<String, Integer> nextMap) {
+        if (nextMap == null)
+            return;
+        HashSet<String> newSet = new HashSet<>();
+
+        if (nextMap.size() > set.size()) {
+            Iterator it = set.iterator();
+            while (it.hasNext()) {
+                String key = (String) it.next();
+                if (!nextMap.containsKey(key)) {
+                    newSet.add(key);
+                }
+            }
+            newSet.addAll(nextMap.keySet());
+        } else {
+            Iterator it = nextMap.keySet().iterator();
+            while (it.hasNext()) {
+                String key = (String) it.next();
+                if (!set.contains(key)) {
+                    newSet.add(key);
+                }
+            }
+            newSet.addAll(set);
+        }
+
+        set = newSet;
+    }
+
+    private void filterNot(HashMap<String, Integer> nextMap) {
+        if (nextMap == null)
+            return;
+        Iterator<String> it = set.iterator();
+        while (it.hasNext()) {
+            if (nextMap.containsKey(it.next())) {
+                it.remove();
             }
         }
     }
