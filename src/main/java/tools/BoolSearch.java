@@ -5,7 +5,7 @@ import java.util.*;
 public class BoolSearch {
     private HashMap<String, HashMap<String, Integer>> index;
     private HashSet<String> set;
-    
+
     public BoolSearch(HashMap<String, HashMap<String, Integer>> indirectIndex) {
         set = new HashSet<>();
         index = indirectIndex;
@@ -19,32 +19,31 @@ public class BoolSearch {
         HashMap<String, Integer> prevDirectories = index.get(words.get(0));
         Iterator it = prevDirectories.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, Integer> pair = (Map.Entry)it.next();
+            Map.Entry<String, Integer> pair = (Map.Entry) it.next();
             set.add(pair.getKey());
         }
 
         words.remove(0);
 
         for (String b : bools) {
-            switch (b){
-                case "and":
-                    HashMap<String, Integer> nextMap = index.get(words.get(0));
-                    words.remove(0);
-                    filterAnd(nextMap);
-                    break;
-                case "or":
-                    System.out.println('2');
-                    words.remove(0);
+            switch (b) {
+            case "and":
+                HashMap<String, Integer> nextMap = index.get(words.get(0));
+                words.remove(0);
+                filterAnd(nextMap);
+                break;
+            case "or":
+                System.out.println('2');
+                words.remove(0);
 
-                    break;
-                case "not":
-                    System.out.println('3');
-                    words.remove(0);
+                break;
+            case "not":
+                System.out.println('3');
+                words.remove(0);
 
-                    break;
+                break;
             }
         }
-
 
         return set;
     }
@@ -53,7 +52,7 @@ public class BoolSearch {
         if (nextMap.size() > set.size()) {
             Iterator it = set.iterator();
             while (it.hasNext()) {
-                String key = (String)it.next();
+                String key = (String) it.next();
                 if (!nextMap.containsKey(key)) {
                     it.remove();
                 }
@@ -63,9 +62,9 @@ public class BoolSearch {
             set = new HashSet<>();
             Iterator it = nextMap.keySet().iterator();
             while (it.hasNext()) {
-                String key = (String)it.next();
+                String key = (String) it.next();
                 if (oldSet.contains(key)) {
-                    set.add(key);
+                    set.add(key);//test
                 }
             }
         }
