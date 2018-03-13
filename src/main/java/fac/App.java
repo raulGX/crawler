@@ -1,5 +1,6 @@
 package fac;
 
+import tools.BoolSearch;
 import tools.DirectoryParser;
 import tools.SiteScraper;
 import tools.WordParser;
@@ -37,11 +38,6 @@ public class App {
             try {//write filename : word(count);
                 FileWriter fw = new FileWriter(directIndexFileName, true);
                 value.forEach((word, count) -> {
-//                    try {
-//                        fw.write(filename + " : " + word + "(" + count + ");");
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
 
                     if (!indirectIndex.containsKey(word)) {
                         indirectIndex.put(word, new HashMap<>());
@@ -55,6 +51,10 @@ public class App {
             }
 
         });
+
+        String searchString = "ana or mara and mere not pere";
+        BoolSearch bs = new BoolSearch(indirectIndex);
+        bs.boolSearch(searchString);
 
     }
 }
