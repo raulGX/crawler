@@ -49,8 +49,10 @@ public class BoolSearch {
     }
 
     private void filterAnd(HashMap<String, Integer> nextMap) {
-        if (nextMap == null)
+        if (nextMap == null){
+            set = new HashSet<>(); //multime and empty = empty
             return;
+        }
         if (nextMap.size() > set.size()) {
             Iterator it = set.iterator();
             while (it.hasNext()) {
