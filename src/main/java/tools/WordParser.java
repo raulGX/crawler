@@ -3,13 +3,11 @@ package tools;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class WordParser {
@@ -17,6 +15,7 @@ public class WordParser {
     private List<String> stopwords = null;
     public static List<String> exceptions = Arrays.asList("SW", "GoT", "fara");
     public static final String wordSeparators = "[.,:;()?!\"\\s]+";
+    public static List<String> boolWords = Arrays.asList("and", "or", "not");
     public WordParser(List<String> stopwords) {
         wordMap = new HashMap<>();
         this.stopwords = stopwords;
@@ -37,18 +36,24 @@ public class WordParser {
         input.useDelimiter(wordSeparators);
         while (input.hasNext()) {
             String word = input.next();
-            if (exceptions != null && exceptions.contains(word)) {
+            if (exceptions.contains(word)) {
                 //adds to wordMap and skips over stopwords
+                if (wordMap.containsKey(word)) {
+                    int count = wordMap.get(word);
+                    wordMap.put(word, count+1);
+                } else {
+                    wordMap.put(word, 1);
+                }
             }
-            else if (stopwords != null && stopwords.contains(word)) {
-                continue;
+            else if (!stopwords.contains(word)) {//word = fc(word)
+                if (wordMap.containsKey(word)) {
+                    int count = wordMap.get(word);
+                    wordMap.put(word, count+1);
+                } else {
+                    wordMap.put(word, 1);
+                }
             }
-            if (wordMap.containsKey(word)) {
-                int count = wordMap.get(word);
-                wordMap.put(word, count+1);
-            } else {
-                wordMap.put(word, 1);
-            }
+
         }
     }
 
@@ -65,5 +70,22 @@ public class WordParser {
 
     public HashMap<String, Integer> getWordMap() {
         return wordMap;
+    }
+
+    public static List<String> getWordsForBoolSearch(String s, boolean isBoolWord) {
+        String[] words = s.split(" ");
+        List<String> retList = new ArrayList<>();
+        for (String word : words) {
+            if (isBoolWord) {
+                if (boolWords.contains(word)) {
+                    retList.add(word);
+                }
+            } else {
+                if (!boolWords.contains(word)) {
+                    retList.add(word);
+                }
+            }
+        }
+        return retList;
     }
 }
