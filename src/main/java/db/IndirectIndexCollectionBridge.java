@@ -1,6 +1,8 @@
 package db;
 
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
 import org.bson.Document;
 
 import java.util.HashMap;
@@ -20,15 +22,21 @@ public class IndirectIndexCollectionBridge {
 
         while (iterator.hasNext()) {
             String key = iterator.next();
-            Document fromDb = indirectIndexCollection.find(eq(DocumentKey, key)).first();
 
-            if (fromDb == null) {
-                Document toInsert = new Document();
-                toInsert.append(DocumentKey, key);
-                List<Document> listOfApperances = DbUtils.fromMapToList(indirectIndex.get(key));
-                toInsert.append(DocumentValue, listOfApperances);
-                indirectIndexCollection.insertOne(toInsert);
-            }
+            Document toInsert = new Document();
+            List<Document> listOfApperances = DbUtils.fromMapToList(indirectIndex.get(key));
+            Document query = new Document(DocumentKey, key);
+
+            Document updateOnInsert = new Document(DocumentValue,
+                    new Document("$each", listOfApperances)
+            );
+            Document update = new Document("$push", updateOnInsert);
+
+            FindOneAndUpdateOptions options = new FindOneAndUpdateOptions();
+            options.returnDocument(ReturnDocument.AFTER);
+            options.upsert(true);
+
+            indirectIndexCollection.findOneAndUpdate(query, update, options);
         }
 
     }
