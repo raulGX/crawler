@@ -1,5 +1,10 @@
 package fac;
 
+import com.mongodb.client.MongoCollection;
+import db.DbSingleton;
+import db.DirectIndexCollectionBridge;
+import db.IndirectIndexCollectionBridge;
+import org.bson.Document;
 import tools.BoolSearch;
 import tools.DirectoryParser;
 import tools.SiteScraper;
@@ -30,7 +35,7 @@ public class App {
                 filesDirectIndexes.put(fileName, wp.getWordMap());
             });
 
-        System.out.println(filesDirectIndexes.size());
+        DirectIndexCollectionBridge.addDirectIndexes(filesDirectIndexes);
 
         String directIndexFileName = "a1.txt";
         HashMap<String, HashMap<String, Integer>> indirectIndex = new HashMap<>();
@@ -52,9 +57,7 @@ public class App {
 
         });
 
-        String searchString = "ana or mara and mere not pere";
-        BoolSearch bs = new BoolSearch(indirectIndex);
-        bs.boolSearch(searchString);
+        IndirectIndexCollectionBridge.addIndirectIndex(indirectIndex);
 
     }
 }
