@@ -23,14 +23,13 @@ import java.util.List;
 public class App {
     public static void main(String[] args) {
         List<Path> paths = new DirectoryParser().getFiles(Paths.get("testfolder"));
-        List<String> stopwords = WordParser.getStopwords("stopwords.txt");
         HashMap<String, HashMap<String, Integer>> filesDirectIndexes = new HashMap<>();
         //^^^^ "filename": <"word": count>
 
         paths.stream()
             .forEach(path -> { //reads files + adds to filesDirectIndexes
                 String fileName = path.toAbsolutePath().toString();
-                WordParser wp = new WordParser(stopwords);
+                WordParser wp = new WordParser();
                 wp.readFromFile(fileName);
                 filesDirectIndexes.put(fileName, wp.getWordMap());
             });
