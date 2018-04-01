@@ -25,6 +25,7 @@ public class DirectoryParser {
         try { //add files to main list
             filesInDirectory = Files.walk(Paths.get(dirname.toString()))
                 .filter(Files::isRegularFile)
+                .filter(item -> !item.toFile().isHidden())
                 .map(Path::toAbsolutePath)
                 .collect(Collectors.toList());
             files.addAll(filesInDirectory);

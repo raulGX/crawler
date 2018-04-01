@@ -14,11 +14,13 @@ public class WordParser {
     private HashMap<String, Integer> wordMap;
     private List<String> stopwords = null;
     public static List<String> exceptions = Arrays.asList("SW", "GoT", "fara");
-    public static final String wordSeparators = "[.,:;()?!\"\\s]+";
+    public static final String wordSeparators = "[.,\\$:;()?!\"\\s]+";
+    // mongod illegal keyNames /\. "$
     public static List<String> boolWords = Arrays.asList("and", "or", "not");
-    public WordParser(List<String> stopwords) {
+
+    public WordParser() {
         wordMap = new HashMap<>();
-        this.stopwords = stopwords;
+        this.stopwords = WordParser.getStopwords("stopwords.txt");
     }
 
     public void readFromFile(Path filePath) {
