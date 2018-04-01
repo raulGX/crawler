@@ -37,4 +37,15 @@ public class DirectIndexCollectionBridge {
             e.printStackTrace();
         }
     }
+
+    public static void addDirectIndex(String key, Document map) {
+        Document toInsert = new Document()
+                .append(DocumentKey, key)
+                .append(DocumentValue, map);
+        try {
+            DbSingleton.getInstance().getDirectIndexCollection().insertOne(toInsert);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
