@@ -1,5 +1,7 @@
 package tools;
 
+import opennlp.tools.stemmer.PorterStemmer;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,8 +38,9 @@ public class WordParser {
             System.out.println("File not found: " + file);
         }
         input.useDelimiter(wordSeparators);
+        PorterStemmer stemmer = new PorterStemmer();
         while (input.hasNext()) {
-            String word = input.next();
+            String word = input.next().toLowerCase();
             if (exceptions.contains(word)) {
                 //adds to wordMap and skips over stopwords
                 if (wordMap.containsKey(word)) {
@@ -48,6 +51,7 @@ public class WordParser {
                 }
             }
             else if (!stopwords.contains(word)) {//word = fc(word)
+                word = stemmer.stem(word);
                 if (wordMap.containsKey(word)) {
                     int count = wordMap.get(word);
                     wordMap.put(word, count+1);
