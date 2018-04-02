@@ -1,13 +1,12 @@
 package docreducer;
 
-import docdispatcher.DocumentProducer;
+import db.DbUtils;
 import kafka.KafkaConstants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.bson.BasicBSONObject;
 import org.bson.Document;
 import tools.WordParser;
 
@@ -32,7 +31,7 @@ public class DocReducerApp {
                     wp.readFromFile(docname);
                     Document doc = new Document();
                     doc.append("map", wp.getWordMap());
-                    doc.append("document", docname);
+                    doc.append(DbUtils.DocumentPath, docname);
                     ProducerRecord<String, String> item = new ProducerRecord<>(KafkaConstants.TOPIC_DIRECT_INDEX, doc.toJson());
                     kafkaProducer.send(item);
                     System.out.println("sent: " + docname);

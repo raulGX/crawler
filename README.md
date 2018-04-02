@@ -45,3 +45,10 @@ Add partitions to existing topic:
 ```
 kafka-topics --zookeeper localhost:2181 --alter --topic doc-to-process --partitions 3`
 ```
+
+## Mongo
+
+```
+docker run -p 27017:27017 --name ecbd-mongo -d mongo
+docker run -it --link ecbd-mongo:mongo --rm mongo sh -c 'exec mongo "$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/test"'
+```
