@@ -13,13 +13,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WordParser {
-    private HashMap<String, Integer> wordMap;
+    private HashMap<String, Float> wordMap;
     private List<String> stopwords = null;
     public static List<String> exceptions = Arrays.asList("SW", "GoT", "fara");
     public static final String wordSeparators = "[.,\\$:;()?!\"\\s]+";
     // mongod illegal keyNames /\. "$
     public static List<String> boolWords = Arrays.asList("and", "or", "not");
-
+    private long wordsCount = 0;
     public WordParser() {
         wordMap = new HashMap<>();
         this.stopwords = WordParser.getStopwords("stopwords.txt");
@@ -30,6 +30,8 @@ public class WordParser {
     }
 
     public void readFromFile(String filePath) {
+        wordMap = new HashMap<>();
+        wordsCount = 0;
         File file = new File(filePath);
         Scanner input = null; //remove filepath string with actual file
         try {
@@ -42,21 +44,23 @@ public class WordParser {
         while (input.hasNext()) {
             String word = input.next().toLowerCase();
             if (exceptions.contains(word)) {
+                wordsCount++;
                 //adds to wordMap and skips over stopwords
                 if (wordMap.containsKey(word)) {
-                    int count = wordMap.get(word);
+                    float count = wordMap.get(word);
                     wordMap.put(word, count+1);
                 } else {
-                    wordMap.put(word, 1);
+                    wordMap.put(word, 1.0f);
                 }
             }
             else if (!stopwords.contains(word)) {//word = fc(word)
+                wordsCount++;
                 word = stemmer.stem(word);
                 if (wordMap.containsKey(word)) {
-                    int count = wordMap.get(word);
+                    float count = wordMap.get(word);
                     wordMap.put(word, count+1);
                 } else {
-                    wordMap.put(word, 1);
+                    wordMap.put(word, 1.0f);
                 }
             }
 
@@ -74,7 +78,13 @@ public class WordParser {
         }
     }
 
-    public HashMap<String, Integer> getWordMap() {
+    public HashMap<String, Float> getWordMap() {
+        Iterator<String> it = wordMap.keySet().iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            float count = wordMap.get(key);
+            wordMap.put(key, count/wordsCount);
+        }
         return wordMap;
     }
 

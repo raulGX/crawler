@@ -1,54 +1,65 @@
 package tools;
 
+import db.IndirectIndexCollectionBridge;
+import org.bson.Document;
+
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class BoolSearch {
-    private HashMap<String, HashMap<String, Integer>> index;
     private HashSet<String> set;
 
-    public BoolSearch(HashMap<String, HashMap<String, Integer>> indirectIndex) {
+    public BoolSearch() {
         set = new HashSet<>();
-        index = indirectIndex;
     }
 
+//{
+//	"_id" : "tea",
+//	"values" : [
+//		{
+//			"no" : 3,
+//			"path" : "/Users/raulpopovici/Desktop/facultate/riw/labprb/crawler/testfolder/1.txt"
+//		},
+//		{
+//			"no" : 1,
+//			"path" : "/Users/raulpopovici/Desktop/facultate/riw/labprb/crawler/testfolder/3.txt"
+//		}
+//	]
+//}
+//
     public HashSet<String> boolSearch(String searchString) {
         List<String> words = WordParser.getWordsForBoolSearch(searchString, false);
         List<String> bools = WordParser.getWordsForBoolSearch(searchString, true);
 
         //adds directories from first item to the hashset
-        HashMap<String, Integer> prevDirectories = index.get(words.get(0));
-        Iterator it = prevDirectories.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, Integer> pair = (Map.Entry) it.next();
-            set.add(pair.getKey());
-        }
-
+        Document iIndexEntry = IndirectIndexCollectionBridge.getWord(words.get(0));
+        List<Document> values = (List<Document>) iIndexEntry.get("values");
         words.remove(0);
 
-        for (String b : bools) {
-            switch (b) {
-            case "and":
-                HashMap<String, Integer> nextMap = index.get(words.get(0));
-                words.remove(0);
-                filterAnd(nextMap);
-                break;
-            case "or":
-                HashMap<String, Integer> nextMapOr = index.get(words.get(0));
-                words.remove(0);
-                filterOr(nextMapOr);
-                break;
-            case "not":
-                HashMap<String, Integer> nextMapNot = index.get(words.get(0));
-                words.remove(0);
-                filterNot(nextMapNot);
-                break;
-            }
-        }
+//        for (String b : bools) {
+//            switch (b) {
+//            case "and":
+//                HashMap<String, Float> nextMap = index.get(words.get(0));
+//                words.remove(0);
+//                filterAnd(nextMap);
+//                break;
+//            case "or":
+//                HashMap<String, Float> nextMapOr = index.get(words.get(0));
+//                words.remove(0);
+//                filterOr(nextMapOr);
+//                break;
+//            case "not":
+//                HashMap<String, Float> nextMapNot = index.get(words.get(0));
+//                words.remove(0);
+//                filterNot(nextMapNot);
+//                break;
+//            }
+//        }
 
         return set;
     }
 
-    private void filterAnd(HashMap<String, Integer> nextMap) {
+    private void filterAnd(HashMap<String, Float> nextMap) {
         if (nextMap == null){
             set = new HashSet<>(); //multime and empty = empty
             return;
@@ -74,7 +85,7 @@ public class BoolSearch {
         }
     }
 
-    private void filterOr(HashMap<String, Integer> nextMap) {
+    private void filterOr(HashMap<String, Float> nextMap) {
         if (nextMap == null)
             return;
         HashSet<String> newSet = new HashSet<>();
@@ -102,7 +113,7 @@ public class BoolSearch {
         set = newSet;
     }
 
-    private void filterNot(HashMap<String, Integer> nextMap) {
+    private void filterNot(HashMap<String, Float> nextMap) {
         if (nextMap == null)
             return;
         Iterator<String> it = set.iterator();

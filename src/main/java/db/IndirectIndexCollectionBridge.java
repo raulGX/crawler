@@ -16,7 +16,7 @@ public class IndirectIndexCollectionBridge {
     public static final String DocumentKey = "_id";
     public static final String DocumentValue = "values";
 
-    public static void addIndirectIndex(HashMap<String, HashMap<String, Integer>> indirectIndex) {
+    public static void addIndirectIndex(HashMap<String, HashMap<String, Float>> indirectIndex) {
         MongoCollection<Document> indirectIndexCollection = DbSingleton.getInstance().getIndirectIndexCollection();
 
         Iterator<String> iterator = indirectIndex.keySet().iterator();
@@ -67,5 +67,9 @@ public class IndirectIndexCollectionBridge {
         options.upsert(true);
 
         indirectIndexCollection.findOneAndUpdate(query, update, options);
+    }
+    public static Document getWord(String word) {
+        MongoCollection<Document> indirectIndexCollection = DbSingleton.getInstance().getIndirectIndexCollection();
+        return indirectIndexCollection.find(eq("_id", word)).first();
     }
 }
