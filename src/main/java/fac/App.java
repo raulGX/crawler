@@ -23,7 +23,7 @@ import java.util.List;
 public class App {
     public static void main(String[] args) {
         List<Path> paths = new DirectoryParser().getFiles(Paths.get("testfolder"));
-        HashMap<String, HashMap<String, Integer>> filesDirectIndexes = new HashMap<>();
+        HashMap<String, HashMap<String, Double>> filesDirectIndexes = new HashMap<>();
         //^^^^ "filename": <"word": count>
 
         paths.stream()
@@ -37,7 +37,7 @@ public class App {
         DirectIndexCollectionBridge.addDirectIndexes(filesDirectIndexes);
 
         String directIndexFileName = "a1.txt";
-        HashMap<String, HashMap<String, Integer>> indirectIndex = new HashMap<>();
+        HashMap<String, HashMap<String, Double>> indirectIndex = new HashMap<>();
         filesDirectIndexes.forEach((filename, value) -> {
             try {//write filename : word(count);
                 FileWriter fw = new FileWriter(directIndexFileName, true);
