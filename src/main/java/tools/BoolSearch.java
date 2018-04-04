@@ -1,16 +1,19 @@
 package tools;
 
+import db.DirectIndexCollectionBridge;
 import db.IndirectIndexCollectionBridge;
 import org.bson.Document;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class BoolSearch {
     private HashSet<String> set;
-
+    private HashMap<String,HashMap<String, Double>> index;
+    private List<String> words;
+    private List<String> bools;
     public BoolSearch() {
         set = new HashSet<>();
+        index = new HashMap<>();
     }
 
 //{
@@ -27,39 +30,57 @@ public class BoolSearch {
 //	]
 //}
 //
+    private HashMap<String, Double> getMapFromArray(ArrayList<Document> docs) {
+        HashMap<String, Double> retMap = new HashMap<>();
+        for (Document doc : docs) {
+            retMap.put((String)doc.get("path"), (Double)doc.get("no"));
+        }
+        return  retMap;
+    }
+
+    private void getWordIndexes() {
+        for (String word : words) {
+            Document doc = IndirectIndexCollectionBridge.getWord(word);
+            HashMap<String, Double> indirectIndex = getMapFromArray((ArrayList<Document>) doc.get(IndirectIndexCollectionBridge.DocumentValue));
+            index.put(word, indirectIndex);
+        }
+    }
+
     public HashSet<String> boolSearch(String searchString) {
-        List<String> words = WordParser.getWordsForBoolSearch(searchString, false);
-        List<String> bools = WordParser.getWordsForBoolSearch(searchString, true);
+        words = WordParser.getWordsForBoolSearch(searchString, false);
+        bools = WordParser.getWordsForBoolSearch(searchString, true);
 
         //adds directories from first item to the hashset
-        Document iIndexEntry = IndirectIndexCollectionBridge.getWord(words.get(0));
-        List<Document> values = (List<Document>) iIndexEntry.get("values");
+
+        //for every word do this make index
+        getWordIndexes();
+        set.addAll(index.get(words.get(0)).keySet());
         words.remove(0);
 
-//        for (String b : bools) {
-//            switch (b) {
-//            case "and":
-//                HashMap<String, Float> nextMap = index.get(words.get(0));
-//                words.remove(0);
-//                filterAnd(nextMap);
-//                break;
-//            case "or":
-//                HashMap<String, Float> nextMapOr = index.get(words.get(0));
-//                words.remove(0);
-//                filterOr(nextMapOr);
-//                break;
-//            case "not":
-//                HashMap<String, Float> nextMapNot = index.get(words.get(0));
-//                words.remove(0);
-//                filterNot(nextMapNot);
-//                break;
-//            }
-//        }
+        for (String b : bools) {
+            switch (b) {
+            case "and":
+                HashMap<String, Double> nextMap = index.get(words.get(0));
+                words.remove(0);
+                filterAnd(nextMap);
+                break;
+            case "or":
+                HashMap<String, Double> nextMapOr = index.get(words.get(0));
+                words.remove(0);
+                filterOr(nextMapOr);
+                break;
+            case "not":
+                HashMap<String, Double> nextMapNot = index.get(words.get(0));
+                words.remove(0);
+                filterNot(nextMapNot);
+                break;
+            }
+        }
 
         return set;
     }
 
-    private void filterAnd(HashMap<String, Float> nextMap) {
+    private void filterAnd(HashMap<String, Double> nextMap) {
         if (nextMap == null){
             set = new HashSet<>(); //multime and empty = empty
             return;
@@ -85,7 +106,7 @@ public class BoolSearch {
         }
     }
 
-    private void filterOr(HashMap<String, Float> nextMap) {
+    private void filterOr(HashMap<String, Double> nextMap) {
         if (nextMap == null)
             return;
         HashSet<String> newSet = new HashSet<>();
@@ -113,7 +134,7 @@ public class BoolSearch {
         set = newSet;
     }
 
-    private void filterNot(HashMap<String, Float> nextMap) {
+    private void filterNot(HashMap<String, Double> nextMap) {
         if (nextMap == null)
             return;
         Iterator<String> it = set.iterator();

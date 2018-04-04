@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class WordParser {
-    private HashMap<String, Float> wordMap;
+    private HashMap<String, Double> wordMap;
     private List<String> stopwords = null;
     public static List<String> exceptions = Arrays.asList("SW", "GoT", "fara");
     public static final String wordSeparators = "[.,\\$:;()?!\"\\s]+";
@@ -47,20 +47,20 @@ public class WordParser {
                 wordsCount++;
                 //adds to wordMap and skips over stopwords
                 if (wordMap.containsKey(word)) {
-                    float count = wordMap.get(word);
+                    Double count = wordMap.get(word);
                     wordMap.put(word, count+1);
                 } else {
-                    wordMap.put(word, 1.0f);
+                    wordMap.put(word, 1.0);
                 }
             }
             else if (!stopwords.contains(word)) {//word = fc(word)
                 wordsCount++;
                 word = stemmer.stem(word);
                 if (wordMap.containsKey(word)) {
-                    float count = wordMap.get(word);
+                    Double count = wordMap.get(word);
                     wordMap.put(word, count+1);
                 } else {
-                    wordMap.put(word, 1.0f);
+                    wordMap.put(word, 1.0);
                 }
             }
 
@@ -78,11 +78,11 @@ public class WordParser {
         }
     }
 
-    public HashMap<String, Float> getWordMap() {
+    public HashMap<String, Double> getWordMap() {
         Iterator<String> it = wordMap.keySet().iterator();
         while (it.hasNext()) {
             String key = it.next();
-            float count = wordMap.get(key);
+            Double count = wordMap.get(key);
             wordMap.put(key, count/wordsCount);
         }
         return wordMap;

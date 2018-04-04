@@ -16,7 +16,7 @@ public class IndirectIndexCollectionBridge {
     public static final String DocumentKey = "_id";
     public static final String DocumentValue = "values";
 
-    public static void addIndirectIndex(HashMap<String, HashMap<String, Float>> indirectIndex) {
+    public static void addIndirectIndex(HashMap<String, HashMap<String, Double>> indirectIndex) {
         MongoCollection<Document> indirectIndexCollection = DbSingleton.getInstance().getIndirectIndexCollection();
 
         Iterator<String> iterator = indirectIndex.keySet().iterator();
