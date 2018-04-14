@@ -21,6 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class App {
+    /**
+     * Sequential app
+     * @param args
+     */
     public static void main(String[] args) {
         List<Path> paths = new DirectoryParser().getFiles(Paths.get("testfolder"));
         HashMap<String, HashMap<String, Double>> filesDirectIndexes = new HashMap<>();
@@ -36,11 +40,9 @@ public class App {
 
         DirectIndexCollectionBridge.addDirectIndexes(filesDirectIndexes);
 
-        String directIndexFileName = "a1.txt";
         HashMap<String, HashMap<String, Double>> indirectIndex = new HashMap<>();
         filesDirectIndexes.forEach((filename, value) -> {
-            try {//write filename : word(count);
-                FileWriter fw = new FileWriter(directIndexFileName, true);
+            try {
                 value.forEach((word, count) -> {
 
                     if (!indirectIndex.containsKey(word)) {
@@ -50,12 +52,13 @@ public class App {
                     indirectIndex.get(word).put(filename, count);
                 });
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
         });
-
+        System.out.println("Read " + filesDirectIndexes.size() + " files");
+        System.out.println("Number of words: " + indirectIndex.size());
         IndirectIndexCollectionBridge.addIndirectIndex(indirectIndex);
 
     }

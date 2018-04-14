@@ -56,4 +56,9 @@ public class DirectIndexCollectionBridge {
         MongoCollection<Document> collection = DbSingleton.getInstance().getDirectIndexCollection();
         return collection.find(eq(DocumentKey, word)).first();
     }
+
+    public static Document getIndex(String word) {
+        MongoCollection<Document> collection = DbSingleton.getInstance().getDirectIndexCollection();
+        return collection.find(eq(DocumentKey, word)).first();
+    }
 }

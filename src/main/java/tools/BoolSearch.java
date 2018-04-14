@@ -1,6 +1,5 @@
 package tools;
 
-import db.DirectIndexCollectionBridge;
 import db.IndirectIndexCollectionBridge;
 import org.bson.Document;
 
@@ -11,25 +10,16 @@ public class BoolSearch {
     private HashMap<String,HashMap<String, Double>> index;
     private List<String> words;
     private List<String> bools;
+    private String searchString;
     public BoolSearch() {
         set = new HashSet<>();
         index = new HashMap<>();
     }
 
-//{
-//	"_id" : "tea",
-//	"values" : [
-//		{
-//			"no" : 3,
-//			"path" : "/Users/raulpopovici/Desktop/facultate/riw/labprb/crawler/testfolder/1.txt"
-//		},
-//		{
-//			"no" : 1,
-//			"path" : "/Users/raulpopovici/Desktop/facultate/riw/labprb/crawler/testfolder/3.txt"
-//		}
-//	]
-//}
-//
+    public List<String> getWords() {
+        return WordParser.getWordsForBoolSearch(searchString, false);
+    }
+
     private HashMap<String, Double> getMapFromArray(ArrayList<Document> docs) {
         HashMap<String, Double> retMap = new HashMap<>();
         for (Document doc : docs) {
@@ -41,12 +31,18 @@ public class BoolSearch {
     private void getWordIndexes() {
         for (String word : words) {
             Document doc = IndirectIndexCollectionBridge.getWord(word);
-            HashMap<String, Double> indirectIndex = getMapFromArray((ArrayList<Document>) doc.get(IndirectIndexCollectionBridge.DocumentValue));
-            index.put(word, indirectIndex);
+            try {
+                HashMap<String, Double> indirectIndex = getMapFromArray((ArrayList<Document>) doc.get(IndirectIndexCollectionBridge.DocumentValue));
+                index.put(word, indirectIndex);
+            } catch (Exception e) {
+                System.out.println("No entries found for: " + word);
+            }
+
         }
     }
 
     public HashSet<String> boolSearch(String searchString) {
+        this.searchString = searchString;
         words = WordParser.getWordsForBoolSearch(searchString, false);
         bools = WordParser.getWordsForBoolSearch(searchString, true);
 
@@ -54,7 +50,12 @@ public class BoolSearch {
 
         //for every word do this make index
         getWordIndexes();
-        set.addAll(index.get(words.get(0)).keySet());
+        try {
+            set.addAll(index.get(words.get(0)).keySet());
+        } catch (Exception e) {
+
+        }
+
         words.remove(0);
 
         for (String b : bools) {
@@ -78,6 +79,10 @@ public class BoolSearch {
         }
 
         return set;
+    }
+
+    public HashMap<String,HashMap<String, Double>> getIndex() {
+        return index;
     }
 
     private void filterAnd(HashMap<String, Double> nextMap) {
