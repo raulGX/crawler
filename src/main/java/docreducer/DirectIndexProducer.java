@@ -2,7 +2,6 @@ package docreducer;
 
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.bson.Document;
 
 import java.util.Properties;
 

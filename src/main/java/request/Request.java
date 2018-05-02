@@ -9,6 +9,7 @@ import java.net.URL;
 public class Request {
     private int redirectCount = 0;
     public static int REDIRECTS_BEFORE_ABANDON = 5;
+
     private RequestResponse readHeader(BufferedReader in) {
         int contentLength = 0;
         int responseCode = 0;
@@ -30,10 +31,11 @@ public class Request {
         }
         return new RequestResponse(responseCode, contentLength, location);
     }
+
     private String getBody(BufferedReader in) throws IOException {
         StringBuilder sb = new StringBuilder();
         String line;
-        while (( line = in.readLine())!= null) {
+        while ((line = in.readLine()) != null) {
             sb.append(line);
             if (line.contains("/html>")) {
                 break;
@@ -41,6 +43,7 @@ public class Request {
         }
         return sb.toString();
     }
+
     public String httpRequest(String host, String path, int port) throws Exception {
         host = host.trim();
         path = path.trim();
@@ -51,21 +54,20 @@ public class Request {
         if (host.contains("https")) {
             SSLSocketFactory sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             URL url = new URL(host);
-            HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setSSLSocketFactory(sslsocketfactory);
             in = conn.getInputStream();
             inputStream = new InputStreamReader(in);
             bufferedreader = new BufferedReader(inputStream);
             return getBody(bufferedreader);
-        }
-        else {
-            String header = "GET " + path + " HTTP/1.1\r\nHost: " + host + "\r\nUser-Agent: CLIENTRIW\r\nConnection: close\r\n\r\n";
+        } else {
+            String header = "GET " + path + " HTTP/1.1\r\nHost: " + host
+                    + "\r\nUser-Agent: CLIENTRIW\r\nConnection: close\r\n\r\n";
             String ip;
 
             if (host.equals("127.0.0.1")) {
                 ip = "127.0.0.1";
-            }
-            else {
+            } else {
                 ip = java.net.InetAddress.getByName(host).getHostAddress(); // todo replace with homemade function
             }
 
@@ -87,7 +89,7 @@ public class Request {
             redirectCount++;
             String redirectLocation = res.getRedirectLocation();
             if (redirectLocation.contains("http")) {
-                return httpRequest(redirectLocation,"/", port);
+                return httpRequest(redirectLocation, "/", port);
             }
             return httpRequest(host, redirectLocation, port);
         }

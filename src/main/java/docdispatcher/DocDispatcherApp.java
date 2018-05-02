@@ -4,7 +4,6 @@ import tools.DirectoryParser;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -25,11 +24,10 @@ public class DocDispatcherApp {
                 }
                 // /Users/raulpopovici/Desktop/facultate/riw/labprb/crawler/testfolder
                 List<Path> paths;
-                try{
+                try {
                     File folder = new File(line);
                     paths = new DirectoryParser().getFiles(folder.toPath());
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     paths = new LinkedList<>();
                 }
@@ -37,11 +35,10 @@ public class DocDispatcherApp {
                     producer.publish(path.toString());
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
+            sc.close();
             producer.close();
         }
         //todo new thread that runs getDbIndexCount
