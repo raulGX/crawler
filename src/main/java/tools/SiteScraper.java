@@ -13,7 +13,15 @@ public class SiteScraper {
     public SiteScraper(String url) {
         try {
             doc = Jsoup.connect(url).get();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+    public SiteScraper(String body, boolean fromString) {
+        try {
+            doc = Jsoup.parse(body);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -52,6 +60,9 @@ public class SiteScraper {
     }
 
     public String getRobots() {
+        if (doc == null) {
+            return null;
+        }
         return doc.select("meta[name=\"robots\"]").attr("content");
     }
 
