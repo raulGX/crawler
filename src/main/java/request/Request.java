@@ -3,6 +3,7 @@ package request;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 
@@ -94,5 +95,45 @@ public class Request {
             return httpRequest(host, redirectLocation, port);
         }
         return getBody(bufferedreader);
+    }
+    public String httpRequestFromIp(String host, String path, int port, String ip) throws Exception {
+        host = host.trim();
+        path = path.trim();
+        InputStream in;
+        OutputStream out;
+        InputStreamReader inputStream;
+        BufferedReader bufferedreader;
+
+            String header = "GET " + path + " HTTP/1.1\r\nHost: " + host
+                    + "\r\nUser-Agent: CLIENTRIW\r\nConnection: close\r\n\r\n";
+            Socket sock = new Socket(ip, port);
+            in = sock.getInputStream();
+            out = sock.getOutputStream();
+            inputStream = new InputStreamReader(in);
+            bufferedreader = new BufferedReader(inputStream);
+            DataOutputStream output = new DataOutputStream(out);
+            output.write(header.getBytes());
+            output.flush();
+
+
+        RequestResponse res = readHeader(bufferedreader);
+        if (res.shouldRedirect()) {
+            if (redirectCount >= REDIRECTS_BEFORE_ABANDON) {
+                throw new Exception("spidertrapped");
+            }
+            redirectCount++;
+            String redirectLocation = res.getRedirectLocation();
+            if (redirectLocation.contains("http")) {
+                return httpRequest(redirectLocation, "/", port);
+            }
+            return httpRequest(host, redirectLocation, port);
+        }
+        return getBody(bufferedreader);
+    }
+    public static String getPathFromUrl(String url) throws MalformedURLException {
+        return new URL(url).getPath();
+    }
+    public static String getHostFromUrl(String url) throws MalformedURLException {
+        return new URL(url).getHost();
     }
 }
